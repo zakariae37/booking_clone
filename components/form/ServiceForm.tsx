@@ -27,13 +27,13 @@ import { createService } from "@/lib/actions/service.action";
 import { usePathname, useRouter } from "next/navigation";
 
 interface Props {
-  mongoUserId: string
+  mongoUserId: string;
 }
 
-const Page = ({ mongoUserId } : Props) => {
+const Page = ({ mongoUserId }: Props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const pathname = usePathname()
-  const router = useRouter()
+  const pathname = usePathname();
+  const router = useRouter();
   // 1. Define your form.
   const form = useForm<z.infer<typeof serviceSchema>>({
     resolver: zodResolver(serviceSchema),
@@ -60,9 +60,9 @@ const Page = ({ mongoUserId } : Props) => {
         price: values.price,
         category: values.category,
         amenities: values.amenities,
-        path: pathname
+        path: pathname,
       });
-      router.push('/')
+      router.push("/");
     } catch (error) {
       console.log(error);
     } finally {
@@ -73,7 +73,7 @@ const Page = ({ mongoUserId } : Props) => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="grid grid-cols-1 gap-x-8 md:grid-cols-2"
+        className="mx-auto mt-8 grid max-w-xl grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8"
       >
         <FormField
           control={form.control}
@@ -87,7 +87,9 @@ const Page = ({ mongoUserId } : Props) => {
                   className="w-full rounded-md border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </FormControl>
-              <FormDescription className="text-xs">Add your service name</FormDescription>
+              <FormDescription className="text-xs">
+                Add your service name
+              </FormDescription>
               <FormMessage className="text-red-500" />
             </FormItem>
           )}
@@ -97,7 +99,9 @@ const Page = ({ mongoUserId } : Props) => {
           name="description"
           render={({ field }) => (
             <FormItem className="col-span-1 md:col-span-2">
-              <FormLabel className=" px-2 py-6 text-gray-400">Description</FormLabel>
+              <FormLabel className=" px-2 py-6 text-gray-400">
+                Description
+              </FormLabel>
               <FormControl className="relative">
                 <Input
                   {...field}
@@ -164,7 +168,9 @@ const Page = ({ mongoUserId } : Props) => {
                   className="w-full rounded-md border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </FormControl>
-              <FormDescription className="text-xs">Add a price to your service</FormDescription>
+              <FormDescription className="text-xs">
+                Add a price to your service
+              </FormDescription>
               <FormMessage className="text-red-500" />
             </FormItem>
           )}
@@ -219,12 +225,18 @@ const Page = ({ mongoUserId } : Props) => {
                   <SelectItem value="breakfast">Break Fast</SelectItem>
                 </SelectContent>
               </Select>
-              <FormDescription className="text-xs">Wi-Fi, GYM, POOL</FormDescription>
+              <FormDescription className="text-xs">
+                Wi-Fi, GYM, POOL
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit" className="my-2 bg-blue-800" disabled={isSubmitting}>
+        <Button
+          type="submit"
+          className="my-2 bg-blue-800"
+          disabled={isSubmitting}
+        >
           Submit
         </Button>
       </form>
