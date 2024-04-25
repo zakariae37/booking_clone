@@ -22,9 +22,12 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { serviceSchema } from "@/lib/validations";
-import { useState } from "react";
+import React, { useState } from "react";
 import { createService } from "@/lib/actions/service.action";
 import { usePathname, useRouter } from "next/navigation";
+import FileBase from "react-file-base64";
+import { Badge } from "../ui/badge";
+import Image from "next/image";
 
 interface Props {
   mongoUserId: string;
@@ -43,8 +46,9 @@ const Page = ({ mongoUserId }: Props) => {
       image: "",
       rooms: 0,
       price: 0,
+      location: "",
       category: "hotels",
-      amenities: "gym",
+      amenities: [],
     },
   });
 
@@ -58,6 +62,8 @@ const Page = ({ mongoUserId }: Props) => {
         image: values.image,
         author: JSON.parse(mongoUserId),
         price: values.price,
+        rooms: values.rooms,
+        location: values.location,
         category: values.category,
         amenities: values.amenities,
         path: pathname,
@@ -69,11 +75,40 @@ const Page = ({ mongoUserId }: Props) => {
       setIsSubmitting(false);
     }
   }
+
+  const handleInputKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    field: any
+  ) => {
+    if (e.key === "Enter" && field.name === "amenities") {
+      e.preventDefault();
+      const amenitiesInput = e.target as HTMLInputElement; // get the amenities input
+      const amenitiesValue = amenitiesInput.value.trim(); // trim for delete white spaces
+
+      if (amenitiesValue !== "") {
+        
+        if (!field.value.includes(amenitiesValue as never)) {
+          // one amenities , not repeat the same amenities
+          form.setValue("amenities", [...field.value, amenitiesValue]);
+          amenitiesInput.value = "";
+          form.clearErrors("amenities");
+        }
+      } else {
+        form.trigger();
+      }
+    }
+  };
+
+  const handleAmenitiesRemove = (amenitie: string, field: any) => {
+    const newAmenities = field.value.filter((a: string) => a !== amenitie);
+    form.setValue("amenities", newAmenities);
+  };
+
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="mx-auto mt-8 grid max-w-xl grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8"
+        className="mx-auto grid max-w-xl grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8"
       >
         <FormField
           control={form.control}
@@ -120,8 +155,27 @@ const Page = ({ mongoUserId }: Props) => {
           name="image"
           render={({ field }) => (
             <FormItem className="col-span-1 md:col-span-2">
-              <FormLabel className=" px-2 py-6 text-gray-400">
+              <FormLabel className="px-2 py-6 text-gray-400">
                 Pictures
+              </FormLabel>
+              <FormControl className="relative">
+                <FileBase
+                  type="file"
+                  multiple={false}
+                  onDone={(fileData: any) => field.onChange(fileData.base64)}
+                />
+              </FormControl>
+              <FormMessage className="text-red-500" />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="location"
+          render={({ field }) => (
+            <FormItem className="col-span-1 md:col-span-2">
+              <FormLabel className=" px-2 py-6 text-gray-400">
+                Where the Service is ?
               </FormLabel>
               <FormControl className="relative">
                 <Input
@@ -212,19 +266,33 @@ const Page = ({ mongoUserId }: Props) => {
               <FormLabel className="px-2 py-6 text-gray-400">
                 Amenities
               </FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <SelectTrigger className="w-full rounded border border-gray-300 p-2">
-                  <SelectValue>
-                    <SelectValue placeholder="Select Amenities" />
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="wifi">WI-FI</SelectItem>
-                  <SelectItem value="gym">GYM</SelectItem>
-                  <SelectItem value="pool">POOL</SelectItem>
-                  <SelectItem value="breakfast">Break Fast</SelectItem>
-                </SelectContent>
-              </Select>
+              <>
+                <Input
+                  className=""
+                  placeholder="Add Amenities ..."
+                  onKeyDown={(e) => handleInputKeyDown(e, field)}
+                />
+                {field.value.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {field.value.map((amenitie: any) => (
+                      <Badge
+                        key={amenitie}
+                        className="flex items-center justify-between gap-2 rounded bg-blue-500 px-2 py-1 text-white"
+                        onClick={() => handleAmenitiesRemove(amenitie, field)}
+                      >
+                        <span>{amenitie}</span>
+                        <Image
+                          src="/assets/images/close.png"
+                          alt="close"
+                          width={12}
+                          height={12}
+                          className="cursor-pointer object-contain"
+                        />
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </>
               <FormDescription className="text-xs">
                 Wi-Fi, GYM, POOL
               </FormDescription>

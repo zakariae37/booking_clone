@@ -10,7 +10,9 @@ const Navbar = () => {
   return (
     <nav className="flex items-center justify-between p-4">
       <div>
-        <h1 className="text-2xl font-bold text-white">Booking.com</h1>
+        <Link href='/' className="text-2xl font-bold text-white">
+          Booking.com
+        </Link>
       </div>
       <div className="hidden gap-4 md:flex">
         {NavbarLins.map((link) => (

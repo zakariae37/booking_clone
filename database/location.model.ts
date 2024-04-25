@@ -9,8 +9,7 @@ export interface ILocation extends Document {
 const LocationSchema = new Schema({
     name: { type: String, required: true },
     image: { type: String, required: true },
-    services: [{ type: String, ref: 'Service'}],
-
+    services: [{ type: Schema.Types.ObjectId, ref: 'Service'}],
 })
 
 const Location = models.Location || model('Location', LocationSchema)
